@@ -3,9 +3,9 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <link rel="stylesheet" href="jquery.nextt.multiselect.css" />
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    <script type="text/javascript" src="../dist/jquery.nextt.multiselect.min.js"></script>
+    <script type="text/javascript" src="../dist/jquery.nextt.multiselect.js"></script>
     <script type="text/javascript">
-      $().ready(function(){
+      $(function(){
         var items = {};
         for (var i = 0; i < 27000; i++) {
           items[ 'item' + i ] = 'value' + i;
@@ -14,7 +14,7 @@
         $('#multiselect').nexttMultiselect({ 
           items: items,
           limit: 100,
-          checked: [ 'item1', 'item2']
+          checked: [ 'item1', 'item101' ]
         });
         var opts = '';
 
