@@ -3,20 +3,20 @@ var Nextt = Nextt || {};
 Nextt.MultiselectController = {
 
   init : function (opts){
-    var jqThis = $(this).addClass('multiselect'),
-        jqTriggerContainer = $('<div class="multiselect-trigger-container" />'),
-        jqDropdownContainer = $('<div class="multiselect-dropdown-container" />'),
+    var jqThis = $(this).addClass('multiselect ui-widget'),
+        jqTriggerContainer = $('<div class="multiselect-trigger-container ui-widget-header ui-state-default ui-corner-all" />'),
+        jqDropdownContainer = $('<div class="multiselect-dropdown-container ui-widget-content ui-corner-all" />'),
         jqActionContainer = $('<div class="multiselect-action-container" />'),
         jqListContainer = $("<ul />"),
-        jqSearchInput = $('<input type="text" class="search-input" />'),
+        jqSearchInput = $('<input type="text" class="search-input ui-corner-all" />'),
         jqCheckAllLink = $('<a href="javascript:void(0)" class="multiselect-checkall-link">Check All</a>'),
         jqUncheckAllLink = $('<a href="javascript:void(0)" class="multiselect-uncheckall-link">Uncheck All</a>'),
         jqItemsSelected = $('<span class="nr-items" />'),
         jqItemsSelectedMessage = $('<span class="items-selected" />');
 
     //append everybody to the DOM.
-    jqItemsSelectedMessage.append( jqItemsSelected, ' selected');
-    jqTriggerContainer.append( jqItemsSelectedMessage );
+    jqItemsSelectedMessage.append( jqItemsSelected, ' selected' );
+    jqTriggerContainer.append( '<span class="ui-icon ui-icon-triangle-2-n-s"></span>' , jqItemsSelectedMessage );
     jqActionContainer.append( jqSearchInput, jqCheckAllLink, jqUncheckAllLink );
     jqDropdownContainer.append( jqActionContainer, jqListContainer );
     jqThis.append( jqTriggerContainer, jqDropdownContainer );
@@ -28,8 +28,17 @@ Nextt.MultiselectController = {
     Nextt.MultiselectHelper._initializeList(opts, jqListContainer);
 
     jqDropdownContainer.hide();
-    jqTriggerContainer.click(function () {
-      jqDropdownContainer.toggle();
+    jqTriggerContainer
+      .click(function () {
+        jqDropdownContainer.toggle();
+         $(this).toggleClass('ui-state-active');
+      })
+      .hover(function () {
+        $(this).toggleClass('ui-state-hover');
+      });
+
+    jqListContainer.delegate('li', 'hover', function () {
+      $(this).toggleClass('ui-state-hover ui-corner-all');
     });
 
     jqListContainer.delegate(':checkbox', 'change', Nextt.MultiselectHelper._refresh);
@@ -137,7 +146,7 @@ Nextt.MultiselectHelper = {
         searchRegex = new RegExp(searchValue, "i");
 
     var filteredKeyList = $.map(opts.items, function (value, key) {
-      if ( searchRegex.test( value.toLowerCase().removeDiacritics() ) ) {
+      if ( searchRegex.test( value ) ) {
         return key;
       }
     });
