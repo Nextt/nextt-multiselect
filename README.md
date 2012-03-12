@@ -3,7 +3,7 @@ Nextt Multiselect jQuery Plugin
 
 ##How to use
 
->Given a div element with the id 'multiselect', initialize it like this:
+*Given a div element with the id 'multiselect', initialize it like this:*
 
 <pre>
 $('#multiselect').nexttMultiselect({
@@ -21,7 +21,7 @@ $('#multiselect').nexttMultiselect({
 });
 </pre>
 
->If you need to update the checked items, there is an 'option' method in the plugin:
+*If you need to update the checked items, there is an 'option' method in the plugin:*
 
 <pre>
 $('#multiselect').nexttMultiselect('options', {
@@ -31,7 +31,7 @@ $('#multiselect').nexttMultiselect('options', {
 });
 </pre>
 
->If you need to update the items you can replace them with the 'options' too:
+*If you need to update the items you can replace them with the 'options' too:*
 
 <pre>
 $('#multiselect').nexttMultiselect({
@@ -43,7 +43,7 @@ $('#multiselect').nexttMultiselect({
 });
 </pre>
 
-> Is possible to update both, items and checked items, with the options method:
+*Is possible to update both, items and checked items, with the options method:*
 
 <pre>
 $('#multiselect').nexttMultiselect('options', {
