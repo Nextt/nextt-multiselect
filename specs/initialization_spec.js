@@ -111,7 +111,6 @@ describe('Initialization', function () {
 
 
     it('must store options in the items ul', function () {
-      expect(jqListContainer.data('options')).toEqual(opts);
       expect(jqListContainer.data('options').items).toEqual(opts.items);
     });
 

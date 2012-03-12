@@ -1,0 +1,24 @@
+{
+  "author": "Nextt",
+  "name": "nextt-multiselect",
+  "description": "Multiselect jQuery Plugin",
+  "version": "0.0.1",
+  "homepage": "http://github.com/Nextt/nextt-multiselect",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/Nextt/nextt-multiselect.git"
+  },
+  "scripts": {
+    "test": "grunt lint jasmine"
+  },
+  "engines": {
+    "node": "~0.6.8"
+  },
+  "devDependencies": {
+    "jasmine-jquery": "1.3.3",
+    "jasmine-node"  : "1.0.21",
+    "jquery"        : "1.6.3",
+    "jsdom"         : "0.2.13"
+
+  }
+}

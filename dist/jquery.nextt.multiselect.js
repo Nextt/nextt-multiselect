@@ -43,62 +43,94 @@ var Nextt = Nextt || {};
 Nextt.MultiselectController = {
 
   init : function (opts){
-    var jqThis = $(this);
-
-    //create the containers
-    var jqTriggerContainer = $('<div class="multiselect-trigger-container" />');
-    var jqDDContainer = $('<div class="multiselect-dropdown-container" />');
-    var jqActionContainer = $('<div class="multiselect-action-container" />');
-    var jqListContainer = $("<ul />");
-
-    //create action elements
-    var jqSearchInput = $('<input type="text" class="searchInput" />');
-    var jqCheckAllLink = $('<a href="javascript:void(0)" class="multiselect-checkall-link">Check All</a>');
-    var jqUncheckAllLink = $('<a href="javascript:void(0)" class="multiselect-uncheckall-link">Uncheck All</a>');
+    var jqThis = $(this).addClass('multiselect'),
+        jqTriggerContainer = $('<div class="multiselect-trigger-container" />'),
+        jqDropdownContainer = $('<div class="multiselect-dropdown-container" />'),
+        jqActionContainer = $('<div class="multiselect-action-container" />'),
+        jqListContainer = $("<ul />"),
+        jqSearchInput = $('<input type="text" class="search-input" />'),
+        jqCheckAllLink = $('<a href="javascript:void(0)" class="multiselect-checkall-link">Check All</a>'),
+        jqUncheckAllLink = $('<a href="javascript:void(0)" class="multiselect-uncheckall-link">Uncheck All</a>'),
+        jqItemsSelected = $('<span class="nr-items" />'),
+        jqItemsSelectedMessage = $('<span class="items-selected" />');
 
     //append everybody to the DOM.
+    jqItemsSelectedMessage.append( jqItemsSelected, ' selected');
+    jqTriggerContainer.append( jqItemsSelectedMessage );
     jqActionContainer.append( jqSearchInput, jqCheckAllLink, jqUncheckAllLink );
-    jqDDContainer.append( jqActionContainer, jqListContainer );
-    jqThis.append( jqTriggerContainer, jqDDContainer );
+    jqDropdownContainer.append( jqActionContainer, jqListContainer );
+    jqThis.append( jqTriggerContainer, jqDropdownContainer );
 
-    //Add options
-    if (opts && opts.items) {
+    //storing options in the most convenient element
+    jqListContainer.data('options', opts);
+
+    //initializing and rendering items
+    Nextt.MultiselectHelper._initializeList(opts, jqListContainer);
+
+    jqDropdownContainer.hide();
+    jqTriggerContainer.click(function () {
+      jqDropdownContainer.toggle();
+    });
+
+    jqListContainer.delegate(':checkbox', 'change', Nextt.MultiselectHelper._refresh);
+    jqListContainer.bind('scroll', Nextt.MultiselectHelper._scroll);
+    jqSearchInput.bind('keyup', Nextt.MultiselectHelper._search);
+    jqCheckAllLink.bind('click', Nextt.MultiselectHelper._checkAll);
+    jqUncheckAllLink.bind('click', Nextt.MultiselectHelper._uncheckAll);
+  },
+
+  options: function (newOpts) {
+    if (newOpts) {
+      var jqListContainer = $(this).find('.multiselect-dropdown-container ul');
+      var opts = jqListContainer.data('options');
+      $.extend(opts, newOpts);
+      Nextt.MultiselectHelper._initializeList(opts, jqListContainer);
+    }
+  }
+};
+
+Nextt.MultiselectHelper = {
+
+  _initializeList: function (opts, jqListContainer) {
+    Nextt.MultiselectHelper._initializeItems(opts, jqListContainer);
+    Nextt.MultiselectHelper._initializeChecked(opts, jqListContainer);
+    Nextt.MultiselectHelper._updateCheckedCounter(jqListContainer);
+  },
+
+  _initializeItems: function (opts, jqListContainer) {
+    if (opts.items) {
       
       if (typeof(opts.items) !== 'object'){
         throw "Nextt Multiselect - Invalid initialization params - items should be a map";
       }
 
-      var keyList = Object.keys(opts.items);
-      var nextItem = Nextt.MultiselectController._nextItem(opts, keyList);
-      
+      var keyList = Object.keys(opts.items),
+          nextItem = Nextt.MultiselectHelper._nextItem(opts, keyList);
+
       //storing data used later for lazy-loading elements
-      jqListContainer.data('options', opts);
       jqListContainer.data('nextItem', nextItem);
       jqListContainer.data('keyList', keyList);
       jqListContainer.data('originalKeyList', keyList);
-      
+
       // rendering first chunk of items
-      jqListContainer.append(Nextt.MultiselectController._render(0, keyList, opts));
+      jqListContainer.empty();
+      Nextt.MultiselectHelper._renderChunk(jqListContainer, 0, keyList, opts);
     } else {
       jqListContainer.append('<li class="multiselect-empty-msg">No items to show</li>');
     }
+  },
 
-    //showing how many items are initially checked
-    var nrItemsSelected = $('<span class="nr-items" />');
-    if (opts && opts.checked) {
-      nrItemsSelected.html(opts.checked.length);
-    } else {
-      nrItemsSelected.html('0');
+  _initializeChecked : function (opts, jqListContainer) {
+    if (opts) {
+      var keyList = jqListContainer.data('keyList');
+      var checked = opts.checked || [];
+      var cleanChecked = $.map(checked, function (value, index) {
+        if ($.inArray(value, keyList) >= 0) {
+          return value;
+        }
+      });
+      opts.checked = cleanChecked;
     }
-    var itemsSelectedMessage = $('<span class="items-selected" />').append(nrItemsSelected).append(' selected');
-    jqTriggerContainer.append(itemsSelectedMessage);
-
-    // binding events
-    jqListContainer.delegate(':checkbox', 'change', Nextt.MultiselectController._refresh);
-    jqListContainer.bind('scroll', Nextt.MultiselectController._scroll);
-    jqSearchInput.bind('keyup', Nextt.MultiselectController._search);
-    jqCheckAllLink.bind('click', Nextt.MultiselectController._checkAll);
-    jqUncheckAllLink.bind('click', Nextt.MultiselectController._uncheckAll);
   },
 
   _scroll : function (){
@@ -113,13 +145,12 @@ Nextt.MultiselectController = {
 
     if (opts && opts.limit && nextItem < keyList.length ) {
       var nextLimit = nextItem + opts.limit;
-      var listHTML = Nextt.MultiselectController._render(nextItem, keyList, opts);
-      jqListContainer.append(listHTML);
+      Nextt.MultiselectHelper._renderChunk(jqListContainer, nextItem, keyList, opts);
       jqListContainer.data('nextItem', nextLimit);
     }
   },
 
-  _render: function (firstItem, keyList, opts) {
+  _renderChunk: function (jqListContainer, firstItem, keyList, opts) {
     var renderLimit = null;
     var remainder = keyList.length - firstItem;
     if (opts.limit) {
@@ -136,7 +167,7 @@ Nextt.MultiselectController = {
       }
       listHTML += '<li><label><input type="checkbox" value="' + keyList[i] + '" ' + checked + '/>' + opts.items[keyList[i]] + '</label></li>';
     }
-    return listHTML;
+    jqListContainer.append(listHTML);
   },
 
   _search: function () {
@@ -151,13 +182,13 @@ Nextt.MultiselectController = {
       }
     });
 
-    var listHTML = Nextt.MultiselectController._render(0, filteredKeyList, opts);
-    var filteredNextItem = Nextt.MultiselectController._nextItem(opts, filteredKeyList);
+    var filteredNextItem = Nextt.MultiselectHelper._nextItem(opts, filteredKeyList);
 
     jqListContainer.data('keyList', filteredKeyList);
     jqListContainer.data('nextItem', filteredNextItem);
     
-    jqListContainer.empty().append(listHTML);
+    jqListContainer.empty();
+    Nextt.MultiselectHelper._renderChunk(jqListContainer, 0, filteredKeyList, opts);
     jqListContainer.scrollTop(0);
   },
 
@@ -178,8 +209,12 @@ Nextt.MultiselectController = {
         checked.splice(index, 1);
       }
     }
-    $('.multiselect-trigger-container .nr-items').html(checked.length);
-    jqListContainer.data("options", opts);
+    Nextt.MultiselectHelper._updateCheckedCounter(jqListContainer);
+  },
+
+  _updateCheckedCounter: function (jqListContainer) {
+    var checkedCounter = jqListContainer.data('options').checked.length;
+    jqListContainer.parent().siblings('.multiselect-trigger-container').find('.nr-items').html(checkedCounter);
   },
 
   _nextItem: function (opts, keyList) {
@@ -194,20 +229,15 @@ Nextt.MultiselectController = {
   },
 
   _uncheckAll: function () {
-    $(this).parent().siblings('ul').data('options').checked = [];
-    $(this).parent().siblings('ul').find(':checkbox').attr('checked', false).trigger('change');
-  },
-
-  // val() method
-  addItems: function (itemMap){
-
+    var jqListContainer = $(this).parent().siblings('ul');
+    jqListContainer.data('options').checked = [];
+    jqListContainer.find(':checkbox').attr('checked', false).trigger('change');
   }
 };
 
 $.extend($.fn, {
 
-  nexttMultiselect : function( method ){
-
+  nexttMultiselect : function( method ) {
     if ( Nextt.MultiselectController[method] ) {
       return Nextt.MultiselectController[method].apply( this, Array.prototype.slice.call( arguments, 1 ));
     } else if ( typeof method === 'object' || ! method ) {
@@ -218,7 +248,6 @@ $.extend($.fn, {
     } else {
       $.error( 'Method ' +  method + ' does not exist on jquery.nextt.multiselect' );
     }
-
   }
 });
 })(jQuery);

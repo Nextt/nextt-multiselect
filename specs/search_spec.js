@@ -25,7 +25,7 @@ describe("Search", function () {
       });
 
       jqListContainer = $(".multiselect-dropdown-container ul");
-      jqSearchInput = jqElem.find('.searchInput');
+      jqSearchInput = jqElem.find('.search-input');
     });
 
     it("must render only items that matches the search input but no more than limit", function () {
@@ -49,7 +49,7 @@ describe("Search", function () {
       });
 
       jqListContainer = $(".multiselect-dropdown-container ul");
-      jqSearchInput = jqElem.find('.searchInput');
+      jqSearchInput = jqElem.find('.search-input');
     });
 
     it("must render only items that matches the search input", function () {

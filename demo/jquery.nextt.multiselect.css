@@ -1,8 +1,54 @@
-#multiselect {
+.multiselect {
   width: 200px;
+  font: 13px Helvetica,arial,freesans,clean,sans-serif;
+  line-height: 1.4;
+  color: #333;
+  margin: 5px;
+  padding: 0;
+  color: #333;
+  text-shadow: 1px 1px 0 white;
+  white-space: nowrap;
+  border: 1px solid #D4D4D4;
+  border-radius: 3px;
+  background-color: #F4F4F4;
+  background-image: -moz-linear-gradient(#F4F4F4,#ECECEC);
+  background-image: -webkit-linear-gradient(#F4F4F4,#ECECEC);
+  -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr='#f4f4f4',endColorstr='#ececec')";
 }
 
+.multiselect-trigger-container { width: 100%; }
+.multiselect-trigger-container .items-selected { 
+  height: 21px;
+  width: 100%;
+  margin-top: -5px;
+  margin-bottom: 0px;
+  position: relative;
+  display: inline-block;
+  padding: 8px 5px 0px 5px;
+  cursor: pointer;
+  font-weight: bold;
+
+}
+
+.multiselect-dropdown-container { margin: 5px; }
 .multiselect-dropdown-container ul {
   height: 200px;
-  overflow: scroll;
+  overflow-y: scroll;
+  list-style: none;
+  clear: both;
+  margin: 10px 0px 0px 0px;
+  padding: 0px;
+}
+
+
+.multiselect-action-container { 
+  margin-bottom: 25px;
+}
+
+.multiselect .multiselect-checkall-link { float: left; }
+.multiselect .multiselect-uncheckall-link { float: right; }
+
+.multiselect .search-input {
+  width: 100%;
+  display: block;
 }
