@@ -133,11 +133,11 @@ Nextt.MultiselectHelper = {
   _search: function () {
     var jqListContainer = $(this).parent().siblings('ul'),
         opts = jqListContainer.data('options'),
-        searchValue = $(this).val(),
+        searchValue = $.trim( $(this).val() ),
         searchRegex = new RegExp(searchValue, "i");
 
     var filteredKeyList = $.map(opts.items, function (value, key) {
-      if (searchRegex.test(value)) {
+      if ( searchRegex.test( value.toLowerCase().removeDiacritics() ) ) {
         return key;
       }
     });

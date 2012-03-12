@@ -5,13 +5,13 @@ config.init({
     banner: ''
   },
   concat: {
-    'dist/jquery.nextt.multiselect.js': ['src/intro.js', 'src/nextt-object.js' ,'src/nextt-multiselect.js', 'src/outro.js']
+    'dist/jquery.nextt.multiselect.js': ['src/intro.js', 'src/nextt-object.js' , 'src/nextt-string.js' ,'src/nextt-multiselect.js', 'src/outro.js']
   },
   min: {
     'dist/jquery.nextt.multiselect.min.js': ['dist/jquery.nextt.multiselect.js']
   },
   lint: {
-    files: ['src/nextt-multiselect.js', 'src/nextt-object.js']
+    files: ['src/nextt-multiselect.js', 'src/nextt-object.js', 'src/nextt-string.js']
   },
   watch: {
     files: ['grunt.js', 'src/**/*.js', 'specs/**/*.js'],
