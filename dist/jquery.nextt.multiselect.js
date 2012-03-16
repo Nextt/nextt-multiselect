@@ -146,12 +146,12 @@ Nextt.MultiselectController = {
         jqSearchInput = $('<input type="text" class="search-input ui-corner-all" />'),
         jqCheckAllLink = $('<a href="javascript:void(0)" class="multiselect-checkall-link">Check All</a>'),
         jqUncheckAllLink = $('<a href="javascript:void(0)" class="multiselect-uncheckall-link">Uncheck All</a>'),
-        //jqItemsSelected = $('<span class="nr-items" />'),
+        jqItemsSelected = $('<span class="nr-items" />'),
         jqItemsSelectedMessage = $('<span class="items-selected" />');
 
     //append everybody to the DOM.
-    //jqItemsSelectedMessage.append( jqItemsSelected, ' selected' );
-    jqTriggerContainer.append( '<span class="ui-icon ui-icon-triangle-2-n-s"></span>' , jqItemsSelectedMessage );
+    jqItemsSelectedMessage.append( jqItemsSelected );
+    jqTriggerContainer.append( '<span class="ui-icon ui-icon-triangle-2-n-s"></span>', jqItemsSelectedMessage );
     jqActionContainer.append( jqSearchInput, jqCheckAllLink, jqUncheckAllLink );
     jqDropdownContainer.append( jqActionContainer, jqListContainer );
     jqThis.append( jqTriggerContainer, jqDropdownContainer );
@@ -355,7 +355,7 @@ Nextt.MultiselectHelper = {
     var checkedCounter = opts.checked.length;
 
     //default label
-    var strCounter = '{{total}} selected';
+    var strCounter = '<span class="nr-items">{{total}}</span> selected';
     //overwrite default label if defined by the user.
     if (opts.counterLabels && opts.counterLabels['*']){
       strCounter = opts.counterLabels['*'];
@@ -385,7 +385,7 @@ Nextt.MultiselectHelper = {
   _checkAll: function (e) {
     var jqListContainer = $(this).parent().siblings('ul');
     var opts = jqListContainer.data('options');
-    opts.checked = jqListContainer.data('originalKeyList');
+    opts.checked = jqListContainer.data('keyList');
     $(this).parent().siblings('ul').find(':checkbox').attr('checked', true).trigger('change');
     e.stopPropagation();
   },
