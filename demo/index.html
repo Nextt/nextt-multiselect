@@ -20,7 +20,14 @@
         $('#multiselect').nexttMultiselect({ 
           items: items,
           limit: 100,
-          checked: [ 'item1', 'item26999', 'x', 'y' ]
+          checked: [ 'item1' ],
+          counterLabels : {
+            '0' : 'Qualquer',
+            '1' : '{{items}}',
+            '*' : '{{total}} selecionados'
+          }
+        }).bind('multiselectclose', function(){
+          console.log('teste');
         });
         var opts = '';
 
