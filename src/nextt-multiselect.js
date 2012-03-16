@@ -11,11 +11,11 @@ Nextt.MultiselectController = {
         jqSearchInput = $('<input type="text" class="search-input ui-corner-all" />'),
         jqCheckAllLink = $('<a href="javascript:void(0)" class="multiselect-checkall-link">Check All</a>'),
         jqUncheckAllLink = $('<a href="javascript:void(0)" class="multiselect-uncheckall-link">Uncheck All</a>'),
-        jqItemsSelected = $('<span class="nr-items" />'),
+        //jqItemsSelected = $('<span class="nr-items" />'),
         jqItemsSelectedMessage = $('<span class="items-selected" />');
 
     //append everybody to the DOM.
-    jqItemsSelectedMessage.append( jqItemsSelected, ' selected' );
+    //jqItemsSelectedMessage.append( jqItemsSelected, ' selected' );
     jqTriggerContainer.append( '<span class="ui-icon ui-icon-triangle-2-n-s"></span>' , jqItemsSelectedMessage );
     jqActionContainer.append( jqSearchInput, jqCheckAllLink, jqUncheckAllLink );
     jqDropdownContainer.append( jqActionContainer, jqListContainer );
@@ -216,8 +216,31 @@ Nextt.MultiselectHelper = {
   },
 
   _updateCheckedCounter: function (jqListContainer) {
-    var checkedCounter = jqListContainer.data('options').checked.length;
-    jqListContainer.parent().siblings('.multiselect-trigger-container').find('.nr-items').html(checkedCounter);
+    var opts = jqListContainer.data('options');
+    var checkedCounter = opts.checked.length;
+
+    //default label
+    var strCounter = '{{total}} selected';
+    //overwrite default label if defined by the user.
+    if (opts.counterLabels && opts.counterLabels['*']){
+      strCounter = opts.counterLabels['*'];
+    } 
+    //overwrite default if count matches specific labels;
+    if (opts.counterLabels && opts.counterLabels[''+checkedCounter]){
+      strCounter = opts.counterLabels[''+checkedCounter];
+    }
+
+    strCounter = strCounter.replace(/\{\{total\}\}/gi, checkedCounter);
+    if (strCounter.match(/\{\{items\}\}/gi)){
+      var checkedLabels = [];
+      for (var i = 0; i < checkedCounter; i++){
+        checkedLabels.push(opts.items[opts.checked[i]]);
+      }
+      var strItems = checkedLabels.join(', ');
+      strCounter = strCounter.replace(/\{\{items\}\}/gi, strItems);
+    }
+
+    jqListContainer.parent().siblings('.multiselect-trigger-container').find('.items-selected').html(strCounter);
   },
 
   _nextItem: function (opts, keyList) {
