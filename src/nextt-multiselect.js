@@ -240,6 +240,7 @@ Nextt.MultiselectHelper = {
   }
 };
 
+var jqOriginalValMethod = $.fn.val;
 $.extend($.fn, {
 
   nexttMultiselect : function( method ) {
@@ -253,5 +254,15 @@ $.extend($.fn, {
     } else {
       $.error( 'Method ' +  method + ' does not exist on jquery.nextt.multiselect' );
     }
+  },
+
+  val : function(){
+    if ($(this).is('.multiselect')){
+      return $(this).find('ul').data('options').checked;
+    } else {
+      return jqOriginalValMethod.apply(this, arguments);
+    }
   }
+
+  
 });
