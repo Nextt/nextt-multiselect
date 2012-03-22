@@ -137,7 +137,20 @@ var Nextt = Nextt || {};
 
 Nextt.MultiselectController = {
 
-  init : function (opts){
+  init : function (userOpts){
+
+    var defaultOpts = {
+      limit : 100,
+      multiple : true,
+      counterLabels : {
+        '0' : 'None',
+        '1' : '{{items}}',
+        '*' : '{{total}} selected'
+      }
+    };
+
+    var opts = $.extend(defaultOpts, userOpts);
+
     var jqThis = $(this).addClass('multiselect ui-widget'),
         jqTriggerContainer = $('<div class="multiselect-trigger-container ui-widget-header ui-state-default ui-corner-all" />'),
         jqDropdownContainer = $('<div class="multiselect-dropdown-container ui-widget-content ui-corner-all" />'),
@@ -146,13 +159,15 @@ Nextt.MultiselectController = {
         jqSearchInput = $('<input type="text" class="search-input ui-corner-all" />'),
         jqCheckAllLink = $('<a href="javascript:void(0)" class="multiselect-checkall-link">Check All</a>'),
         jqUncheckAllLink = $('<a href="javascript:void(0)" class="multiselect-uncheckall-link">Uncheck All</a>'),
-        jqItemsSelected = $('<span class="nr-items" />'),
         jqItemsSelectedMessage = $('<span class="items-selected" />');
 
     //append everybody to the DOM.
-    jqItemsSelectedMessage.append( jqItemsSelected );
     jqTriggerContainer.append( '<span class="ui-icon ui-icon-triangle-2-n-s"></span>', jqItemsSelectedMessage );
-    jqActionContainer.append( jqSearchInput, jqCheckAllLink, jqUncheckAllLink );
+    jqActionContainer.append( jqSearchInput);
+    if (opts.multiple){
+       jqActionContainer.append(jqCheckAllLink, jqUncheckAllLink);
+    }
+    
     jqDropdownContainer.append( jqActionContainer, jqListContainer );
     jqThis.append( jqTriggerContainer, jqDropdownContainer );
 
@@ -254,7 +269,7 @@ Nextt.MultiselectHelper = {
     event.stopPropagation();
   },
 
-  _closeAll : function (){
+  _closeAll : function (event){
     $('.multiselect').has('.multiselect-trigger-container.ui-state-active').each(function(){
       Nextt.MultiselectHelper._close.apply(this, [event]);
     });
@@ -296,12 +311,17 @@ Nextt.MultiselectHelper = {
     }
 
     var listHTML = '';
+    var type = (opts.multiple) ? 'checkbox' : 'radio';
+    var name = Math.random().toString(); 
+    name = 'multiselect-' + name.substring(name.length-5, name.length) + '[]';
+    
     for ( var i = firstItem; i < firstItem + renderLimit; i++ ){
       var checked = '';
       if ( $.inArray(keyList[i], opts.checked) >= 0 ) {
         checked = ' checked="checked"';
       }
-      listHTML += '<li><label><input type="checkbox" value="' + keyList[i] + '" ' + checked + '/>' + opts.items[keyList[i]] + '</label></li>';
+      
+      listHTML += '<li><label><input type="' + type + '" name="'+ name +'" value="' + keyList[i] + '" ' + checked + '/><span>' + opts.items[keyList[i]] + '</span></label></li>';
     }
     $(listHTML).bind('click.multiselect', function(e){
       e.stopPropagation();

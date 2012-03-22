@@ -134,7 +134,7 @@ Nextt.MultiselectHelper = {
     event.stopPropagation();
   },
 
-  _closeAll : function (){
+  _closeAll : function (event){
     $('.multiselect').has('.multiselect-trigger-container.ui-state-active').each(function(){
       Nextt.MultiselectHelper._close.apply(this, [event]);
     });
